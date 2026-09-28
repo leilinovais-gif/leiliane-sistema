@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Barro Branco · leitura de origem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  :root { --bg: #090915; --card: #151928; --line: #262b40; --accent: #FAE60D; --muted: #8B8FA3; --text: #F2F3F7; --no: #E5645C; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: 'Titillium Web', Arial, sans-serif; color: var(--text); font-size: 13px; line-height: 1.3; }
+  .page { width: 297mm; height: 209mm; padding: 9mm 12mm 8mm; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  h1 { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 800; font-size: 32px; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
+  h1 span { color: var(--accent); }
+  .sub { color: var(--muted); font-size: 11.5px; margin-top: 3px; }
+  h2 { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 600; font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+  .kpi .l { color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi .n { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 800; font-size: 34px; line-height: 1.05; }
+  .kpi .s { color: var(--muted); font-size: 10.5px; }
+  .kpi.yes .n { color: var(--accent); } .kpi.no .n { color: var(--no); }
+  .row { display: grid; gap: 8px; }
+  .r1 { grid-template-columns: 1.2fr 1fr; }
+  .r2 { grid-template-columns: 1.15fr 1fr 1fr; flex: 1; min-height: 0; }
+  .box { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 8px 11px; display: flex; flex-direction: column; min-height: 0; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 4px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  td.n { width: 11%; text-align: right; font-weight: 700; padding-right: 7px; }
+  td.p { width: 10%; text-align: right; color: var(--muted); padding-right: 7px; }
+  td.b { width: 26%; }
+  .bar { height: 9px; background: var(--accent); border-radius: 2px; } .bar.no { background: var(--no); } .bar.mid { background: var(--muted); }
+  .det { color: var(--muted); font-size: 11px; }
+  .grp td { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 5px; padding-bottom: 1px; border-bottom: none; }
+  .tag { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; background: var(--accent); } .tag.no { background: var(--no); } .tag.mid { background: var(--muted); }
+  .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 4px; flex: 1; }
+  .cell { border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; display: flex; flex-direction: column; justify-content: center; }
+  .cell .n { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 800; font-size: 38px; line-height: 1; }
+  .cell .t { font-size: 12.5px; font-weight: 600; margin-top: 2px; } .cell .d { color: var(--muted); font-size: 10.5px; }
+  .cell.full { border-color: var(--accent); } .cell.full .n { color: var(--accent); }
+  .cell.none { border-color: var(--no); } .cell.none .n { color: var(--no); }
+  ul { margin-left: 16px; } li { margin-bottom: 5px; font-size: 12px; }
+  .foot { color: var(--muted); font-size: 10.5px; margin-top: auto; padding-top: 3px; }
+  .note { color: var(--muted); font-size: 10.5px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<section class="page">
+  <div>
+    <h1>Barro Branco 2026 · <span>de onde vêm os leads e as vendas</span></h1>
+    <div class="sub">Teorema Militar · produto "TM - Full - Barro Branco - APMBB" · vendas aprovadas na Hotmart de 04/07 a 21/09/2026 · leads da Operação e do Mega Revisão no ActiveCampaign</div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="l">Leads únicos (Operação + Mega)</div><div class="n">1.946</div><div class="s">618 só Operação · 1.193 só Mega · 135 nos dois</div></div>
+    <div class="kpi"><div class="l">Vendas na Hotmart</div><div class="n">164</div><div class="s">04/07 a 21/09</div></div>
+    <div class="kpi yes"><div class="l">Venda com lead no ActiveCampaign</div><div class="n">86</div><div class="s">52% · origem do lead conhecida</div></div>
+    <div class="kpi no"><div class="l">Venda sem lead encontrado</div><div class="n">78</div><div class="s">48% · origem do lead desconhecida</div></div>
+    <div class="kpi no"><div class="l">Sem nenhuma leitura</div><div class="n">66</div><div class="s">40% · sem lead e sem campanha no clique</div></div>
+  </div>
+
+  <div class="row r1">
+    <div class="box">
+      <h2>1. Os leads têm origem</h2>
+      <table>
+        <tr><td><span class="tag"></span>Meta Ads <span class="det">captação paga</span></td><td class="n">1.080</td><td class="p">56%</td><td class="b"><div class="bar" style="width:100%"></div></td></tr>
+        <tr><td><span class="tag"></span>Instagram orgânico <span class="det">Stories 285 · Bio 179 · ManyChat 160</span></td><td class="n">628</td><td class="p">32%</td><td class="b"><div class="bar" style="width:58%"></div></td></tr>
+        <tr><td><span class="tag"></span>YouTube Ads</td><td class="n">102</td><td class="p">5%</td><td class="b"><div class="bar" style="width:9.4%"></div></td></tr>
+        <tr><td><span class="tag mid"></span>Acesso direto <span class="det">digitou o link</span></td><td class="n">58</td><td class="p">3%</td><td class="b"><div class="bar mid" style="width:5.4%"></div></td></tr>
+        <tr><td><span class="tag"></span>YouTube orgânico</td><td class="n">37</td><td class="p">2%</td><td class="b"><div class="bar" style="width:3.4%"></div></td></tr>
+        <tr><td><span class="tag no"></span>Sem origem identificada</td><td class="n">37</td><td class="p">2%</td><td class="b"><div class="bar no" style="width:3.4%"></div></td></tr>
+      </table>
+      <div class="note">Cada lead conta uma vez (quem entrou no Mega e na Operação não se repete). Origem = UTM gravada no cadastro; quem entrou nos dois fica com a mais recente. Outros: 4.</div>
+    </div>
+
+    <div class="box">
+      <h2>2. As vendas: quem já era lead</h2>
+      <table>
+        <tr class="grp"><td colspan="4">Encontrado no ActiveCampaign (email ou telefone)</td></tr>
+        <tr><td><span class="tag"></span>Lead da Operação</td><td class="n">63</td><td class="p">38%</td><td class="b"><div class="bar" style="width:81%"></div></td></tr>
+        <tr><td><span class="tag"></span>Só lead do Mega</td><td class="n">17</td><td class="p">10%</td><td class="b"><div class="bar" style="width:22%"></div></td></tr>
+        <tr><td><span class="tag"></span>Outra lista</td><td class="n">6</td><td class="p">4%</td><td class="b"><div class="bar" style="width:8%"></div></td></tr>
+        <tr class="grp"><td colspan="4">Não encontrado</td></tr>
+        <tr><td><span class="tag no"></span>Nem email nem telefone batem</td><td class="n">78</td><td class="p">48%</td><td class="b"><div class="bar no" style="width:100%"></div></td></tr>
+      </table>
+      <div class="note">Só 8 das 164 se recuperam pelo telefone: o problema não é email diferente.</div>
+    </div>
+  </div>
+
+  <div class="row r2">
+    <div class="box">
+      <h2>3. Último clique (sck da Hotmart)</h2>
+      <table>
+        <tr class="grp"><td colspan="4">Com leitura</td></tr>
+        <tr><td><span class="tag"></span>Campanha do evento <span class="det">Insta 29 · YouTube 20 · Meta 2 · YT Ads 1</span></td><td class="n">52</td><td class="p">32%</td><td class="b"><div class="bar" style="width:98%"></div></td></tr>
+        <tr><td><span class="tag mid"></span>Outras marcações <span class="det">site, ManyChat, bio...</span></td><td class="n">11</td><td class="p">7%</td><td class="b"><div class="bar mid" style="width:21%"></div></td></tr>
+        <tr class="grp"><td colspan="4">Sem leitura</td></tr>
+        <tr><td><span class="tag no"></span>Sem UTM <span class="det">Google 36 · direto 10 · YouTube 5 · sites 2</span></td><td class="n">53</td><td class="p">32%</td><td class="b"><div class="bar no" style="width:100%"></div></td></tr>
+        <tr><td><span class="tag no"></span>Vazio <span class="det">a Hotmart não recebeu origem</span></td><td class="n">48</td><td class="p">29%</td><td class="b"><div class="bar no" style="width:91%"></div></td></tr>
+      </table>
+    </div>
+
+    <div class="box">
+      <h2>4. Leitura por venda</h2>
+      <div class="det">Lead no ActiveCampaign × campanha no último clique</div>
+      <div class="matrix">
+        <div class="cell full"><div class="n">40</div><div class="t">Leitura completa</div><div class="d">lead + campanha · 24%</div></div>
+        <div class="cell"><div class="n">46</div><div class="t">Só o lead</div><div class="d">clique sem campanha · 28%</div></div>
+        <div class="cell"><div class="n">12</div><div class="t">Só o clique</div><div class="d">lead não achado · 7%</div></div>
+        <div class="cell none"><div class="n">66</div><div class="t">Nenhuma leitura</div><div class="d">sem lead e sem campanha · 40%</div></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Para discutir com a Hotmart</h2>
+      <ul>
+        <li><b>sck vazio em 48 vendas (29%).</b> Quando a Hotmart não grava o sck que vem no link (recompra, renovação, oferta, checkout aberto direto)?</li>
+        <li><b>Relatório de origem.</b> Existe painel ou exportação com src e sck por venda? Hoje lemos pela API.</li>
+        <li><b>src e sck.</b> Há limite de tamanho? Podemos usar o src pra primeira origem e o sck pro último clique?</li>
+        <li><b>GA4 no checkout.</b> A visita ao site não se liga à compra. Existe domínio cruzado no checkout?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot">Fontes: API da Hotmart (vendas aprovadas e completas, produto 1920258) e ActiveCampaign (25.931 contatos; tags OP.BB.26 e MEGA.BB.26), 21/09/2026. Lead encontrado = email ou telefone na base. Vendas de renovação incluídas (13 de 164).</div>
+</section>
+</body>
+</html>

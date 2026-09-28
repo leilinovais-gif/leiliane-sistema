@@ -1,0 +1,129 @@
+<!-- modelo da página de boas-vindas. O /setup preenche os campos {{...}} e salva bem-vindo.html na raiz.
+     As seções "A casa", "As duas gavetas" e "O ritmo" são fixas: explicam o sistema, não o negócio. -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bem-vindo · {{NEGOCIO}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{FONTE_TITULO_URL}}&family={{FONTE_CORPO_URL}}&display=swap" rel="stylesheet">
+<style>
+  /* as cores e fontes vêm do guia de design da marca. Se o guia estava vazio, o /setup usa o padrão neutro. */
+  :root{
+    --fundo:{{COR_FUNDO}};
+    --card:{{COR_CARD}};
+    --texto:{{COR_TEXTO}};
+    --fraco:{{COR_TEXTO_FRACO}};
+    --destaque:{{COR_DESTAQUE}};
+    --linha:{{COR_LINHA}};
+    --fonte-titulo:'{{FONTE_TITULO}}', Georgia, serif;
+    --fonte-corpo:'{{FONTE_CORPO}}', system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fundo);color:var(--texto);font-family:var(--fonte-corpo);font-size:16px;line-height:1.55;padding:56px 24px 80px}
+  .folha{max-width:720px;margin:0 auto}
+  h1{font-family:var(--fonte-titulo);font-weight:600;font-size:36px;line-height:1.12;margin:0 0 12px;letter-spacing:-.01em}
+  h1 span{color:var(--destaque)}
+  .linha-fina{color:var(--fraco);margin:0 0 34px;font-size:17px}
+  .card{background:var(--card);border:1px dashed var(--linha);border-radius:14px;padding:20px 22px;margin-top:14px}
+  .card h3{margin:0 0 10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--fraco);font-weight:600}
+  .lista{margin:0;padding-left:18px}
+  .lista li{margin:6px 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:rgba(127,127,127,.12);padding:1px 6px;border-radius:5px}
+  .secao{margin:34px 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--fraco);font-weight:600}
+  .arvore{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;line-height:1.8;overflow-x:auto;white-space:pre;margin:0}
+  .arvore b{color:var(--destaque);font-weight:700}
+  .arvore i{color:var(--fraco);font-style:normal}
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:560px){.duo{grid-template-columns:1fr}}
+  .duo .card{margin-top:0}
+  .duo p{margin:0;color:var(--fraco);font-size:14.5px}
+  .duo .lista{margin-top:8px}
+  .duo .lista li{font-size:14.5px}
+  .ritmo{display:flex;gap:14px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--linha)}
+  .ritmo:last-child{border-bottom:0}
+  .ritmo .quando{flex-shrink:0;width:132px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--destaque);font-weight:700;margin-top:3px}
+  .ritmo b{display:block;margin-bottom:2px}
+  .ritmo p{margin:0;color:var(--fraco);font-size:14.5px}
+  .passo{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--linha)}
+  .passo:last-child{border-bottom:0}
+  .passo .n{flex-shrink:0;width:28px;height:28px;border-radius:999px;background:var(--destaque);color:var(--fundo);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .passo b{display:block;margin-bottom:2px}
+  .passo p{margin:0;color:var(--fraco);font-size:15px}
+  .discreto{color:var(--fraco);font-size:14px;margin-top:28px}
+  .logo{max-width:160px;max-height:64px;margin-bottom:28px;display:block}
+</style>
+</head>
+<body>
+<div class="folha">
+
+  {{LOGO}}
+
+  <h1>Pronto, {{NOME}}. Agora eu conheço a <span>{{NEGOCIO}}</span>.</h1>
+  <p class="linha-fina">{{RESUMO}}</p>
+
+  <div class="card">
+    <h3>O que eu já sei de você</h3>
+    <ul class="lista">{{SABERES}}</ul>
+  </div>
+
+  <div class="secao">A casa: onde olhar e navegar</div>
+  <div class="card">
+    <pre class="arvore"><b>AGENTS.md</b>        <i>as regras do sistema. Eu leio em toda conversa</i>
+<b>_contexto/</b>       <i>o que eu SEI do seu negócio</i>
+<b>_memoria/</b>        <i>o que ACONTECEU, e por quê</i>
+<b>sistema/</b>         <i>o motor do kit. Você não precisa abrir</i>
+<b>.claude/</b>         <i>as habilidades (skills)</i>
+{{PASTAS}}</pre>
+  </div>
+
+  <div class="duo">
+    <div class="card">
+      <h3>_contexto/ · o que eu sei</h3>
+      <p>É a minha cabeça sobre o seu negócio. Se algo aqui estiver errado, eu erro junto: pode
+      abrir e corrigir quando quiser.</p>
+      <ul class="lista">
+        <li><code>empresa.md</code> quem é você e o negócio</li>
+        <li><code>preferencias.md</code> como falar com você</li>
+        <li><code>agora.md</code> onde paramos, pendências</li>
+        <li><code>estrategia.md</code> o foco do momento</li>
+        <li><code>ferramentas.md</code> o que eu alcanço</li>
+        <li><code>infra.md</code> onde as coisas estão hospedadas</li>
+        <li><code>marca/</code> como a marca parece e fala</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>_memoria/ · o que aconteceu</h3>
+      <p>O histórico da casa. Eu consulto quando você pergunta do passado; você quase nunca
+      precisa abrir.</p>
+      <ul class="lista">
+        <li><code>diario/</code> um arquivo por dia de trabalho</li>
+        <li><code>decisoes.md</code> o que foi decidido, e por quê</li>
+        <li><code>recados/</code> avisos de automações e do time</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="secao">O ritmo do dia a dia</div>
+  <div class="card">
+    <div class="ritmo"><div class="quando">toda sessão</div><div><b><code>/atualizar</code> antes de fechar</b><p>O mais importante. Salva o diário do dia, o "onde paramos" e as decisões. Sessão que rendeu e não passou por ele é memória perdida. Eu vou te oferecer quando sentir que acabou.</p></div></div>
+    <div class="ritmo"><div class="quando">quando quiser</div><div><b><code>/iniciar</code> pra abrir</b><p>Opcional. Puxa o GitHub, confere recados e diz onde você parou. Vale mais quando tem sócio ou automação escrevendo aqui também.</p></div></div>
+    <div class="ritmo"><div class="quando">pra guardar</div><div><b><code>/syncar</code> manda pro GitHub</b><p>Faz o backup e te diz exatamente o que subiu.</p></div></div>
+    <div class="ritmo"><div class="quando">de tempos em tempos</div><div><b><code>/faxina</code> audita a casa</b><p>Uma vez por mês, mais ou menos. Aponta o que envelheceu, o que estourou o limite e o que ficou órfão. Só relata; quem decide é você.</p></div></div>
+    <div class="ritmo"><div class="quando">quando chegar</div><div><b><code>/novo-projeto</code> pra cliente novo</b><p>Cria a pasta do projeto com contexto próprio. E <code>/compartilhar</code> quando ela precisar viajar pra alguém.</p></div></div>
+  </div>
+  <p class="discreto">A frase pra decorar: <code>/iniciar</code> lê, <code>/atualizar</code> escreve, <code>/syncar</code> manda pro GitHub.</p>
+
+  <div class="secao">Seus próximos três passos</div>
+  <div class="card">
+    {{PASSOS}}
+  </div>
+
+  <p class="discreto">Esta página é a foto do dia em que você configurou o sistema. Ela não se
+  atualiza: quem sabe onde você parou é o <code>agora.md</code> (e o <code>/iniciar</code> te conta).</p>
+
+</div>
+</body>
+</html>

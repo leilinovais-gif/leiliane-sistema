@@ -1,0 +1,15 @@
+<!-- quem alimenta: o /setup semeia na entrevista; o /atualizar acrescenta quando algo passa a estar hospedado. Lido quando a sessão precisa saber onde algo está (mapa). -->
+# Infra
+
+> Onde as coisas estão hospedadas: site, domínio, servidor, banco, DNS, email, área de membros.
+> É diferente de `ferramentas.md` (o que você usa) e aponta pra onde cada coisa **mora**.
+> Sem chave, sem senha. Aqui vai o nome do serviço, o endereço e quem tem acesso.
+
+| o quê | onde mora (serviço) | endereço | quem acessa e como | observações |
+|---|---|---|---|---|
+| site / domínio | Netlify (hospedagem), Cloudflare (DNS) | leilianearaujo.com.br | Leili | domínio registrado no registro.br |
+| relatório online do Teorema Militar | Cloudflare Workers, KV e D1 (conta do Teorema) | relatorio.teoremamilitar.com.br, página com menu lateral (provisório: relatorio-espcex27.teoremacloudflare.workers.dev); cada operação em /<nome>; formulário público em teoremamilitar.com.br/espcex-27/pesquisa, por rota do Worker no domínio do Teorema; a trilha do lead recebe os avisos do site na rota exata teoremamilitar.com.br/api/visita (desde 2026-09-25; sem asterisco, pra não expor /api/visitas/resumo no domínio aberto) | Leili, com o login do Teorema | senha do relatório e chaves (inclusive as da Hotmart) nos segredos do Cloudflare; valores no `.env` (fora do git); operações encerradas e as logos ficam dentro do `worker.js` |
+| site do Teorema Militar (páginas de captura e de vendas) | WordPress + Elementor Pro (hospedagem própria do Teorema) | teoremamilitar.com.br | desenvolvedor do Teorema (provável nome: Guilherme, autor dos snippets do site); Leili com acesso restabelecido (2026-09-22), painel confirmado como produção (Elementor Pro com licença ativa) | tem GTM do lado do servidor (Stape, `stape.teoremamilitar.com.br`) com GA4 `G-S1B65J2F9H`; scripts de tracking ficam em Elementor → Elementos Personalizados → Código (cache de página no WP Rocket — limpar depois de editar); WPCode não está instalado neste site |
+| banco de dados antigo do Teorema (Power BI morto) | Supabase, projeto `dados` (org "Teorema Militar") | ver `SUPABASE_URL_DADOS` no `.env` | login da Leili no Supabase | tabelas `leads`/`transactions_hotmart`; parou de gravar em 24-25/09/2025 (conta da Hetzner que rodava o n8n foi apagada por inadimplência em nov/2025, sem credencial pra recuperar) |
+| sistema ativo não identificado | Supabase, projeto `vendas-militares` (org "Teorema Militar") | ver `SUPABASE_URL_VENDAS` no `.env` | login da Leili no Supabase | 119 tabelas (`HotmartSale`, `BoletoRecovery`, `CartAbandonment`, `ChatMessage`...), recuperação de boleto/carrinho por WhatsApp; quase certo que é o "Workspace Teorema" (`workspace.teoremamilitar.com.br`, recebe webhooks da Hotmart), sistema que uma pessoa do time está construindo; a Leili vai integrar o relatório dela depois (2026-09-25) |
+| n8n (webhook `webhook.teoremamilitar.com.br/webhook/hotmart_new_transactions`) | servidor apagado em nov/2025 | — | — | webhook da Hotmart "n8n - atualizar transações supabase" recebia 108 envios em 60 dias, todos sem resposta; a Leili desligou em 2026-09-25 (apagar depois de uma semana) |

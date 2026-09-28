@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operação Barro Branco 2027 — Relatório</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090915;
+    --card: #151928;
+    --accent: #FAE60D;
+    --black: #070707;
+    --text: #F2F2F5;
+    --text-weak: #8B8FA3;
+    --line: #262b40;
+    --good: #4ADE80;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Titillium Web', sans-serif;
+    padding: 32px 16px 64px;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(250,230,13,0.06), transparent 40%),
+      radial-gradient(circle at 90% 20%, rgba(21,25,40,0.8), transparent 50%);
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  h1, h2, h3, .num {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 20px; margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+  }
+  .brand-tag {
+    font-size: 12px; letter-spacing: 0.15em; color: var(--accent);
+    font-family: 'Titillium Web', sans-serif; font-weight: 700;
+  }
+  header h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1; margin-top: 4px; }
+  header .meta { text-align: right; font-size: 13px; color: var(--text-weak); }
+
+  .section-title {
+    font-size: 22px; margin: 40px 0 16px; padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .kpi {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px;
+  }
+  .kpi .label { font-size: 12px; color: var(--text-weak); text-transform: uppercase; letter-spacing: 0.08em; }
+  .kpi .num { font-size: 30px; color: var(--accent); margin-top: 6px; }
+  .kpi .sub { font-size: 12px; color: var(--text-weak); margin-top: 4px; }
+  .kpi.highlight { border-color: var(--accent); background: linear-gradient(135deg, var(--card), #1d1408); }
+  .kpi.highlight .num { color: var(--accent); font-size: 34px; }
+
+  table {
+    width: 100%; border-collapse: collapse; background: var(--card);
+    border-radius: 10px; overflow: hidden; font-size: 14px;
+  }
+  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); }
+  th {
+    background: var(--black); color: var(--accent);
+    font-family: 'Titillium Web', sans-serif; font-weight: 700;
+    text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr.total td { font-weight: 700; color: var(--accent); background: rgba(250,230,13,0.05); }
+  td.num-cell { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .funnel {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch;
+  }
+  .funnel .stage {
+    flex: 1; min-width: 140px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px; text-align: center; position: relative;
+  }
+  .funnel .stage .num { font-size: 28px; color: var(--accent); }
+  .funnel .stage .label { font-size: 12px; color: var(--text-weak); margin-top: 6px; text-transform: uppercase; }
+  .funnel .arrow { display: flex; align-items: center; color: var(--accent); font-size: 20px; padding: 0 4px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+  .note {
+    font-size: 13px; color: var(--text-weak); background: var(--card);
+    border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 4px; margin-top: 12px;
+  }
+  footer {
+    margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--text-weak); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+  }
+  .pill.on { background: rgba(74,222,128,0.15); color: var(--good); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand-tag">07/26 · RETA FINAL BARRO BRANCO</div>
+      <h1>Operação Barro Branco</h1>
+    </div>
+    <div class="meta">
+      Teorema Militar · Produto: TM Full — Barro Branco (APMBB)<br>
+      Captação: 16/08 – 15/09/2026 · Carrinho (lançamento): 01/09 – 13/09/2026<br>
+      Relatório gerado em 18/09/2026
+    </div>
+  </header>
+
+  <div class="section-title">Resultado do lançamento</div>
+  <div class="kpi-grid">
+    <div class="kpi highlight">
+      <div class="label">Faturamento bruto — lançamento</div>
+      <div class="num">R$ 145.192</div>
+      <div class="sub">101 vendas (97 novas + 4 renovações) · 01/09 a 13/09</div>
+    </div>
+    <div class="kpi highlight">
+      <div class="label">Faturamento líquido — lançamento</div>
+      <div class="num">R$ 135.226</div>
+      <div class="sub">bruto − taxas Hotmart</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Investimento total (Meta + Google)</div>
+      <div class="num">R$ 14.591</div>
+      <div class="sub">Meta R$ 10.735 (Operação + Mega, c/ imposto de 13,85%) · Google R$ 3.855</div>
+    </div>
+    <div class="kpi">
+      <div class="label">ROAS do lançamento</div>
+      <div class="num">9,95x</div>
+      <div class="sub">bruto ÷ investimento · líquido: 9,27x</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Leads captados (Active Campaign)</div>
+      <div class="num">753</div>
+      <div class="sub">custo/lead ≈ R$ 10,08</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Grupo de WhatsApp</div>
+      <div class="num">556</div>
+      <div class="sub">leads no grupo</div>
+    </div>
+  </div>
+
+  <div class="note">
+    Fora da janela oficial do carrinho (01/09–13/09) também houve venda: <b>26 vendas (R$ 40.755,42)</b> entre 03/08 e 31/08,
+    na fase de captação/aquecimento, e <b>17 vendas (R$ 25.350,02)</b> entre 14/09 e 17/09 (corte deste relatório).
+    Não entram na meta do lançamento, mas mostram receita residual do funil.<br><br>
+    <b>Total geral até ontem (17/09), somando os três períodos:</b> 144 vendas · faturamento bruto <b>R$ 211.297,37</b> ·
+    faturamento líquido <b>R$ 196.799,62</b>.
+  </div>
+
+  <div class="section-title">Funil completo — do lead à venda</div>
+
+  <p style="margin:18px 0 8px; font-size:13px; color:var(--text-weak); text-transform:uppercase; letter-spacing:0.06em;">Etapa 1 — Leads do Mega Revisão (aquecimento gratuito, aconteceu antes)</p>
+  <div class="kpi-grid" style="margin-bottom:10px">
+    <div class="kpi"><div class="label">Total de leads do Mega</div><div class="num">1.328</div></div>
+  </div>
+
+  <p style="margin:18px 0 8px; font-size:13px; color:var(--text-weak); text-transform:uppercase; letter-spacing:0.06em;">Etapa 2 — Leads captados na Operação (só OP.BB.26, sem misturar com o Mega)</p>
+  <div class="kpi-grid" style="margin-bottom:10px">
+    <div class="kpi highlight"><div class="label">Total de leads</div><div class="num">753</div></div>
+    <div class="kpi highlight"><div class="label">Público quente (total)</div><div class="num">503</div><div class="sub">67% · PQ 25% + orgânico 42%</div></div>
+    <div class="kpi"><div class="label">Público frio (PF, pago)</div><div class="num">234</div><div class="sub">31%</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Origem específica (Source + Term cruzados)</th><th class="num-cell">Leads</th></tr></thead>
+    <tbody>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Meta Ads — anúncio pago (323)</td></tr>
+      <tr><td>Placement Reels</td><td class="num-cell">188</td></tr>
+      <tr><td>Placement Stories</td><td class="num-cell">89</td></tr>
+      <tr><td>Placement Feed</td><td class="num-cell">41</td></tr>
+      <tr><td>Placement não identificado</td><td class="num-cell">5</td></tr>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">YouTube Ads — anúncio pago (103)</td></tr>
+      <tr><td>Lookalike visitantes do site — frio</td><td class="num-cell">71</td></tr>
+      <tr><td>Site Teorema Militar — quente</td><td class="num-cell">26</td></tr>
+      <tr><td>Vídeo Barro Branco — quente</td><td class="num-cell">6</td></tr>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Instagram orgânico — postagem, não é anúncio (261)</td></tr>
+      <tr><td>Stories</td><td class="num-cell">180</td></tr>
+      <tr><td>Bio (link na bio)</td><td class="num-cell">69</td></tr>
+      <tr><td><b>ManyChat</b> (automação de resposta no direct/comentário)</td><td class="num-cell">12</td></tr>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Outros (66)</td></tr>
+      <tr><td>Direto (digitou o link)</td><td class="num-cell">44</td></tr>
+      <tr><td>YouTube orgânico</td><td class="num-cell">10</td></tr>
+      <tr><td>Sem origem identificada</td><td class="num-cell">11</td></tr>
+      <tr><td>Flyer</td><td class="num-cell">1</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin:18px 0 8px; font-size:13px; color:var(--text-weak); text-transform:uppercase; letter-spacing:0.06em;">Etapa 3 — As 144 vendas do produto, de onde vieram</p>
+  <table>
+    <thead><tr><th>Origem (tag no Active)</th><th class="num-cell">Vendas</th><th class="num-cell">%</th></tr></thead>
+    <tbody>
+      <tr><td>Só lead da Operação (OP.BB.26)</td><td class="num-cell">49</td><td class="num-cell">34%</td></tr>
+      <tr><td>Passou pelo Mega E pela Operação</td><td class="num-cell">13</td><td class="num-cell">9%</td></tr>
+      <tr><td>Só lead do Mega (nunca entrou na captação da Operação)</td><td class="num-cell">12</td><td class="num-cell">8%</td></tr>
+      <tr><td>Não encontrado (nem email, nem telefone batem com nenhuma lista)</td><td class="num-cell">70</td><td class="num-cell">49%</td></tr>
+      <tr class="total"><td>Total de vendas</td><td class="num-cell">144</td><td class="num-cell">100%</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:14px 0 6px; font-size:12px; color:var(--text-weak);">Detalhe: de onde vieram as 25 vendas que passaram pelo Mega (as 12 só-Mega + as 13 que passaram pelos dois)</p>
+  <table>
+    <thead><tr><th>Origem do lead</th><th class="num-cell">Vendas</th></tr></thead>
+    <tbody>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Só Mega (12)</td></tr>
+      <tr><td>Meta Ads — Captação Mega (frio ou quente)</td><td class="num-cell">3</td></tr>
+      <tr><td>Instagram orgânico (post/story do Mega)</td><td class="num-cell">9</td></tr>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Passou pelos dois — Mega e Operação (13)</td></tr>
+      <tr><td>Meta Ads — Captação Operação</td><td class="num-cell">5</td></tr>
+      <tr><td>Instagram orgânico (campanha da Operação)</td><td class="num-cell">8</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:18px 0 8px; font-size:13px; color:var(--text-weak); text-transform:uppercase; letter-spacing:0.06em;">Etapa 4 — Dos que a gente achou (78 de 143), que público eram</p>
+  <table>
+    <thead><tr><th>Público de quem comprou</th><th class="num-cell">Vendas</th></tr></thead>
+    <tbody>
+      <tr class="total"><td>Quente (total: orgânico + pago)</td><td class="num-cell">67</td></tr>
+      <tr><td>— orgânico Instagram: Stories (conteúdo "cesar")</td><td class="num-cell">30</td></tr>
+      <tr><td>— orgânico Instagram: Bio (conteúdo "cesar")</td><td class="num-cell">13</td></tr>
+      <tr><td>— orgânico Instagram: ManyChat (conteúdo "cesar")</td><td class="num-cell">3</td></tr>
+      <tr><td>— orgânico/direto: outros</td><td class="num-cell">4</td></tr>
+      <tr><td>— pago (PQ)</td><td class="num-cell">17</td></tr>
+      <tr><td>Frio (PF, pago)</td><td class="num-cell">7</td></tr>
+      <tr><td>Não classificado</td><td class="num-cell">4</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin:18px 0 8px; font-size:13px; color:var(--text-weak); text-transform:uppercase; letter-spacing:0.06em;">Etapa 5 — Conversão real da Operação (leads → venda, sem misturar com o Mega)</p>
+  <div class="kpi-grid">
+    <div class="kpi highlight"><div class="label">753 leads da Operação → 62 compraram</div><div class="num">8,2%</div><div class="sub">62 = os 49 só-Operação + os 13 que também passaram pelo Mega</div></div>
+  </div>
+
+  <div class="section-title">Anúncios pagos que mais converteram</div>
+  <table>
+    <thead><tr><th>Plataforma</th><th>Anúncio</th><th class="num-cell">Vendas</th></tr></thead>
+    <tbody>
+      <tr><td>Meta Ads</td><td>Cap_AdV_001 - institucional</td><td class="num-cell">6</td></tr>
+      <tr><td>Meta Ads</td><td>Cap_AdE_001 - institucional curto</td><td class="num-cell">5</td></tr>
+      <tr><td>Meta Ads</td><td>Cap_AdV_010 - Temática (evento libera matrícula c/ desconto)</td><td class="num-cell">3</td></tr>
+      <tr><td>YouTube Ads</td><td>001_institucional</td><td class="num-cell">2</td></tr>
+      <tr><td>Meta Ads</td><td>Cap_AdE_002 - institucional longo</td><td class="num-cell">1</td></tr>
+      <tr><td>Meta Ads</td><td>Cap_AdV_0011 - Pattern interrupt "Para, para, para"</td><td class="num-cell">1</td></tr>
+      <tr><td>Meta Ads</td><td>Cap_AdV_003 - demora pra passar</td><td class="num-cell">1</td></tr>
+      <tr><td>Meta Ads</td><td>Cap_AdV_002 - Sei o que tenho que fazer e não faço</td><td class="num-cell">1</td></tr>
+      <tr><td>YouTube Ads</td><td>007_reprovados</td><td class="num-cell">1</td></tr>
+      <tr><td>YouTube Ads</td><td>011_pattern_interrupt_para_para_para</td><td class="num-cell">1</td></tr>
+    </tbody>
+  </table>
+  <div class="section-title">YouTube Ads: público quente x frio</div>
+  <table>
+    <thead><tr><th>Público</th><th>Conjunto</th><th class="num-cell">Leads</th><th class="num-cell">Vendas</th><th class="num-cell">Conversão</th></tr></thead>
+    <tbody>
+      <tr><td>Frio</td><td>Lookalike de visitantes do site</td><td class="num-cell">72</td><td class="num-cell">0</td><td class="num-cell">0%</td></tr>
+      <tr><td>Quente</td><td>Site Teorema Militar</td><td class="num-cell">30</td><td class="num-cell">3</td><td class="num-cell">10%</td></tr>
+      <tr><td>Quente</td><td>VV Barro Branco</td><td class="num-cell">7</td><td class="num-cell">1</td><td class="num-cell">14,29%</td></tr>
+    </tbody>
+  </table>
+  <div class="section-title">Meta Ads</div>
+  <table>
+    <thead><tr><th>Campanha</th><th class="num-cell">Investido (c/ imposto)</th></tr></thead>
+    <tbody>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Operação Barro Branco (OP.BB.26)</td></tr>
+      <tr><td>Captação — Leads — PQ [AGO.26]</td><td class="num-cell">R$ 3.456,96</td></tr>
+      <tr><td>Captação — Leads — PF [AGO.26]</td><td class="num-cell">R$ 1.761,23</td></tr>
+      <tr><td><b>Lembrete</b> — Aquecimento Live — PQ [AGO.26]</td><td class="num-cell">R$ 536,95</td></tr>
+      <tr><td>Carrinho Aberto — Venda [SET.26]</td><td class="num-cell">R$ 848,02</td></tr>
+      <tr class="total"><td>Subtotal Operação</td><td class="num-cell">R$ 6.603,16</td></tr>
+      <tr><td colspan="2" style="color:var(--text-weak); font-size:11px; text-transform:uppercase; background:var(--black)">Mega Revisão — aquecimento gratuito (MEGA.BB.26)</td></tr>
+      <tr><td>Aquecimento — Live — PQ [JUN.26]</td><td class="num-cell">R$ 550,27</td></tr>
+      <tr><td>Captação — Leads — PF [JUL.26]</td><td class="num-cell">R$ 2.312,11</td></tr>
+      <tr><td>Captação — Leads — PQ [JUL.26]</td><td class="num-cell">R$ 1.269,60</td></tr>
+      <tr class="total"><td>Subtotal Mega Revisão</td><td class="num-cell">R$ 4.131,98</td></tr>
+      <tr class="total"><td>Total Meta (Operação + Mega)</td><td class="num-cell">R$ 10.735,14</td></tr>
+    </tbody>
+  </table>
+
+  <p style="margin:14px 0 6px; font-size:12px; color:var(--text-weak);">O que o pixel do Meta rastreou em cada etapa (dado direto da plataforma, não cruzado com Hotmart)</p>
+  <table>
+    <thead><tr><th>Campanha</th><th>O que rastreou</th><th class="num-cell">Resultado</th><th class="num-cell">Custo/resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Captação — PQ [AGO.26]</td><td>Leads</td><td class="num-cell">267</td><td class="num-cell">R$ 12,95</td></tr>
+      <tr><td>Captação — PF [AGO.26]</td><td>Leads</td><td class="num-cell">205</td><td class="num-cell">R$ 8,59</td></tr>
+      <tr><td>Lembrete — Aquecimento Live</td><td>Cliques no link</td><td class="num-cell">1.300</td><td class="num-cell">R$ 0,41</td></tr>
+      <tr class="total"><td>Carrinho Aberto — Venda</td><td><b>Compras (pixel)</b></td><td class="num-cell"><b>34</b></td><td class="num-cell">R$ 24,94</td></tr>
+    </tbody>
+  </table>
+  <div class="section-title">Google Ads</div>
+  <div class="kpi-grid" style="margin-bottom:14px">
+    <div class="kpi"><div class="label">Cliques</div><div class="num">2.657</div></div>
+    <div class="kpi"><div class="label">Impressões</div><div class="num">427.660</div></div>
+    <div class="kpi"><div class="label">Conversões</div><div class="num">112</div></div>
+    <div class="kpi"><div class="label">Custo/conversão</div><div class="num">R$ 34</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Campanha</th><th class="num-cell">Cliques</th><th class="num-cell">Conv.</th><th class="num-cell">Custo</th></tr></thead>
+    <tbody>
+      <tr><td>Captação — PF</td><td class="num-cell">1.191</td><td class="num-cell">72</td><td class="num-cell">R$ 1.184,56</td></tr>
+      <tr><td>Captação — PQ</td><td class="num-cell">478</td><td class="num-cell">39</td><td class="num-cell">R$ 1.184,09</td></tr>
+      <tr><td>Carrinho Aberto — Venda</td><td class="num-cell">328</td><td class="num-cell">1</td><td class="num-cell">R$ 583,78</td></tr>
+      <tr><td>Aquecimento</td><td class="num-cell">384</td><td class="num-cell">0</td><td class="num-cell">R$ 497,01</td></tr>
+      <tr><td>Display — Carrinho Aberto</td><td class="num-cell">276</td><td class="num-cell">0</td><td class="num-cell">R$ 405,94</td></tr>
+      <tr class="total"><td>Total Google</td><td class="num-cell">2.657</td><td class="num-cell">112</td><td class="num-cell">R$ 3.855,38</td></tr>
+    </tbody>
+  </table>
+  <div class="section-title">Pesquisa de qualificação (quiz)</div>
+  <div class="kpi-grid" style="margin-bottom:14px">
+    <div class="kpi highlight"><div class="label">Respostas em 2026</div><div class="num">107</div><div class="sub">de 347 respostas totais na base (2025+2026)</div></div>
+    <div class="kpi"><div class="label">Grupo de WhatsApp</div><div class="num">556</div><div class="sub">leads no grupo</div></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <table>
+        <thead><tr><th>Quantas vezes já fez a prova</th><th class="num-cell">%</th></tr></thead>
+        <tbody>
+          <tr><td>Nenhuma</td><td class="num-cell">34,6%</td></tr>
+          <tr><td>1 vez</td><td class="num-cell">30,8%</td></tr>
+          <tr><td>2 vezes</td><td class="num-cell">21,5%</td></tr>
+          <tr><td>3 vezes</td><td class="num-cell">7,5%</td></tr>
+          <tr><td>4 ou mais</td><td class="num-cell">5,6%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Nível de experiência</th><th class="num-cell">%</th></tr></thead>
+        <tbody>
+          <tr><td>Estudando, mas sente que não está aprendendo direito</td><td class="num-cell">37,4%</td></tr>
+          <tr><td>Já fez provas, sabe o conteúdo, mas desempenho não satisfaz</td><td class="num-cell">30,8%</td></tr>
+          <tr><td>Nenhuma experiência, acabou de conhecer o universo</td><td class="num-cell">27,1%</td></tr>
+          <tr><td>Foi bem nas provas, não passou por um detalhe</td><td class="num-cell">4,7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Hotmart — Vendas por período</div>
+  <table>
+    <thead><tr><th>Período</th><th class="num-cell">Vendas</th><th class="num-cell">Novas / Renovações</th><th class="num-cell">Faturamento bruto</th><th class="num-cell">Líquido</th></tr></thead>
+    <tbody>
+      <tr class="total"><td>Lançamento (01/09 – 13/09, horário BR) — oficial</td><td class="num-cell">101</td><td class="num-cell">97 / 4</td><td class="num-cell">R$ 145.191,93</td><td class="num-cell">R$ 135.226,46</td></tr>
+      <tr><td>Anteriores (03/08 – 31/08 — captação/aquecimento)</td><td class="num-cell">26</td><td class="num-cell">21 / 5</td><td class="num-cell">R$ 40.755,42</td><td class="num-cell">R$ 37.957,00</td></tr>
+      <tr><td>Posteriores (14/09 – 17/09, corte deste relatório)</td><td class="num-cell">17</td><td class="num-cell">15 / 2</td><td class="num-cell">R$ 25.350,02</td><td class="num-cell">R$ 23.616,16</td></tr>
+      <tr class="total"><td>Total geral</td><td class="num-cell">144</td><td class="num-cell">133 / 11</td><td class="num-cell">R$ 211.297,37</td><td class="num-cell">R$ 196.799,62</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Funil combinado — Mega + Operação juntos, sem duplicar</div>
+  <div class="kpi-grid" style="margin-bottom:10px">
+    <div class="kpi highlight"><div class="label">Total de leads únicos</div><div class="num">1.946</div><div class="sub">753 + 1.328 − 135 que estavam nas duas listas</div></div>
+    <div class="kpi"><div class="label">Público quente (total)</div><div class="num">1.007</div><div class="sub">52%</div></div>
+    <div class="kpi"><div class="label">Público frio</div><div class="num">841</div><div class="sub">43%</div></div>
+  </div>
+
+  <p style="margin:14px 0 6px; font-size:12px; color:var(--text-weak);">Conversão cruzada: canal × público (cada canal, aberto em quente/frio)</p>
+  <table>
+    <thead><tr><th>Canal</th><th>Público</th><th class="num-cell">Leads</th><th class="num-cell">Vendas</th><th class="num-cell">Conversão</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3">Meta Ads</td><td>Quente (PQ)</td><td class="num-cell">277</td><td class="num-cell">12</td><td class="num-cell">4,33%</td></tr>
+      <tr><td>Frio (PF)</td><td class="num-cell">770</td><td class="num-cell">5</td><td class="num-cell">0,65%</td></tr>
+      <tr><td>Não classificado</td><td class="num-cell">33</td><td class="num-cell">0</td><td class="num-cell">0%</td></tr>
+      <tr><td rowspan="2">YouTube Ads</td><td>Quente (PQ)</td><td class="num-cell">32</td><td class="num-cell">4</td><td class="num-cell"><b>12,50%</b></td></tr>
+      <tr><td>Frio (PF)</td><td class="num-cell">71</td><td class="num-cell">0</td><td class="num-cell">0%</td></tr>
+      <tr><td>Instagram orgânico</td><td>Quente (orgânico)</td><td class="num-cell">628</td><td class="num-cell">49</td><td class="num-cell">7,80%</td></tr>
+      <tr><td>YouTube orgânico</td><td>Quente (orgânico)</td><td class="num-cell">10</td><td class="num-cell">1</td><td class="num-cell">10%</td></tr>
+      <tr><td>Direto</td><td>Quente (orgânico)</td><td class="num-cell">57</td><td class="num-cell">0</td><td class="num-cell">0%</td></tr>
+      <tr><td>Outro / sem origem</td><td>Não classificado</td><td class="num-cell">68</td><td class="num-cell">3</td><td class="num-cell">4,41%</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <div>Meta Ads <span class="pill on">conectado</span> · Google Ads <span class="pill on">CSV</span> · ActiveCampaign <span class="pill on">conectado</span> · Hotmart <span class="pill on">conectado</span></div>
+    <div>Le · Teorema Militar</div>
+  </footer>
+
+  <div class="section-title">Comparação com 2025 — mesma janela de carrinho, ano a ano</div>
+  <table>
+    <thead><tr><th>Métrica</th><th class="num-cell">2025 (07/08–18/08)</th><th class="num-cell">2026 (01/09–13/09)</th></tr></thead>
+    <tbody>
+      <tr><td>Leads captados (Operação)</td><td class="num-cell">1.659</td><td class="num-cell">753</td></tr>
+      <tr><td>Investimento total</td><td class="num-cell">R$ 36.085,57</td><td class="num-cell">R$ 14.590,52</td></tr>
+      <tr><td>Vendas no lançamento</td><td class="num-cell">91</td><td class="num-cell">101</td></tr>
+      <tr><td>Faturamento bruto</td><td class="num-cell">R$ 135.320,86</td><td class="num-cell">R$ 145.191,93</td></tr>
+      <tr><td>Faturamento líquido</td><td class="num-cell">R$ 126.020,58</td><td class="num-cell">R$ 135.226,46</td></tr>
+      <tr class="total"><td>ROAS bruto</td><td class="num-cell">3,75x</td><td class="num-cell">9,95x</td></tr>
+      <tr class="total"><td>ROAS líquido</td><td class="num-cell">3,49x</td><td class="num-cell">9,27x</td></tr>
+      <tr><td>Conversão público quente</td><td class="num-cell">7,16%</td><td class="num-cell">11,13%</td></tr>
+      <tr><td>Conversão público frio</td><td class="num-cell">1,04%</td><td class="num-cell">1,28%</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Todo valor do Meta de 2026 neste relatório já inclui os 13,85% de imposto (atualizado em 21/09/2026). Os valores de 2025 estão como no relatório anterior; não confirmei se já incluem o imposto.</div>
+  <p style="margin:14px 0 6px; font-size:12px; color:var(--text-weak);">Prova real: o aquecimento gratuito converteu, nos dois anos?</p>
+  <table>
+    <thead><tr><th></th><th class="num-cell">Investimento</th><th class="num-cell">Leads</th><th class="num-cell">Foram pra Operação</th><th class="num-cell">Compraram</th><th class="num-cell">Conversão</th><th class="num-cell">Faturamento líquido (de quem comprou)</th><th class="num-cell">ROAS líquido</th></tr></thead>
+    <tbody>
+      <tr><td>2025 — Ultimato</td><td class="num-cell">R$ 3.216,42</td><td class="num-cell">824</td><td class="num-cell">98 (11,9%)</td><td class="num-cell">18</td><td class="num-cell">2,18%</td><td class="num-cell">R$ 26.240,60</td><td class="num-cell">8,16x</td></tr>
+      <tr><td>2026 — Mega Revisão</td><td class="num-cell">R$ 4.131,98</td><td class="num-cell">1.328</td><td class="num-cell">135 (10,2%)</td><td class="num-cell">25</td><td class="num-cell">1,88%</td><td class="num-cell">R$ 34.985,67</td><td class="num-cell">8,47x</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Só quem comprou depois de passar pelo aquecimento já rendeu cerca de 8x o investimento gasto no próprio aquecimento — nos dois anos o evento gratuito se pagou várias vezes com essa fatia de vendas.</div>
+  <p style="margin:14px 0 6px; font-size:12px; color:var(--text-weak);">Vendas fora da janela do carrinho — antes e depois, 2025 x 2026</p>
+  <table>
+    <thead><tr><th>Período</th><th class="num-cell">2025</th><th class="num-cell">2026</th></tr></thead>
+    <tbody>
+      <tr><td>Anteriores (antes do carrinho abrir)</td><td class="num-cell">26 vendas · R$ 39.058,27</td><td class="num-cell">26 vendas · R$ 40.755,42</td></tr>
+      <tr><td>Posteriores (+4 dias após fechar)</td><td class="num-cell">3 vendas · R$ 45.236,10</td><td class="num-cell">17 vendas · R$ 25.350,02</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    Diferença explicada: em 2026 o comercial passou a atuar depois do fechamento, o que não existia em 2025. No dia 14/09
+    (um dia após o carrinho fechar) saiu um disparo de reativação para 1.447 contatos, e a partir dele o time fechou venda
+    de Full APMBB até 17/09 — 11 vendas identificadas nesse relatório do comercial, entre R$ 134,44 e R$ 1.499,90 cada,
+    a maioria pela campanha "Campanha em Massa (APMBB)". Sem esse trabalho pós-carrinho, 2026 teria ficado bem mais perto
+    do padrão de 2025 nessa janela.
+  </div>
+</div>
+</body>
+</html>
