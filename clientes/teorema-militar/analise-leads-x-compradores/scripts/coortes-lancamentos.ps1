@@ -6,7 +6,7 @@ $HOJE = [datetime]'2026-09-28'
 $LEADS = Import-Csv "$dados\leads-unificados.csv" -Delimiter ';' -Encoding UTF8
 $HMV = Import-Csv "$dados\hotmart-vendas.csv" -Delimiter ';' -Encoding UTF8
 $META = Import-Csv (Join-Path $PSScriptRoot '..\meta-gasto-por-conjunto.csv') -Delimiter ';' -Encoding UTF8
-$GOO = Import-Csv "$dados\google-ads-gasto-mensal.csv" -Encoding UTF8
+$GOO = @(Import-Csv "$dados\google-ads-gasto-mensal.csv" -Encoding UTF8 | ? { $_.mes -ge '2023-08' })  # mesmo período do Meta
 . "$PSScriptRoot\classe.ps1"
 $lat = [Text.Encoding]::GetEncoding(28591)
 function Fix($s) { if ($s -match 'Ã') { [Text.Encoding]::UTF8.GetString($lat.GetBytes($s)) } else { $s } }
@@ -75,3 +75,25 @@ foreach ($x in $GOO) { $t = Tipo $x.campanha; $a = $x.mes.Substring(0, 4); if (-
 $outT = @(foreach ($k in ($tipos.Keys | Sort { -($tipos[$_].meta + $tipos[$_].google) })) { [ordered]@{ tipo = $k; meta = [math]::Round($tipos[$k].meta, 0); google = [math]::Round($tipos[$k].google, 0); anos = @(foreach ($a in 2023..2026) { [math]::Round([double]$tipos[$k].anos["$a"], 0) }) } })
 $outT | ConvertTo-Json -Depth 4 | Set-Content "$dados\investimento-tipos.json" -Encoding UTF8
 ''; 'INVESTIMENTO POR TIPO'; foreach ($t in $outT) { '{0,-52} Meta {1,9:N0} Google {2,8:N0} total {3,9:N0} | {4}' -f $t.tipo, $t.meta, $t.google, ($t.meta + $t.google), (($t.anos | % { '{0:N0}' -f $_ }) -join ' / ') }
+
+# ---- volume x dinheiro e "vendeu o quê": por lançamento, compradores em 6 meses (todos e frios) e vendas por escola do curso (até hoje)
+$src = Get-Content "$PSScriptRoot\escola.ps1" -Raw -Encoding UTF8; $i0 = $src.IndexOf('function Escola'); $j0 = $src.IndexOf('function Grp'); Invoke-Expression $src.Substring($i0, $j0 - $i0)
+function EscolaProd($p) { $e = Escola $p; if ($e -eq 'Outros / matérias') { if ($p -match 'Edition|Combo|Geografia|Hist|Ingl|Portug|Reda') { 'Matérias avulsas' } else { 'Outros' } } else { $e } }
+$VP = @{}; $seen2 = @{}
+foreach ($s in ($HMV | Sort data)) { $em = $s.email.Trim().ToLower(); $dd = [datetime]$s.data; $pr = Fix $s.produto; $k = "$em|$pr"
+  if ($seen2[$k] -and ($dd - $seen2[$k]).TotalDays -lt 60) { continue }; $seen2[$k] = $dd
+  if (-not $VP[$em]) { $VP[$em] = New-Object System.Collections.ArrayList }; [void]$VP[$em].Add(@{ dt = $dd; val = (Num $s.valor); esc = (EscolaProd $pr) }) }
+$extra = foreach ($L in $LANC) {
+  $rows = @($LEADS | ? { $_.base -eq $L.base }); $ds = @($rows | % { [datetime]$_.data } | Sort); $fim = $ds[[int]($ds.Count * 0.98)].AddDays(21); $lim6 = $fim.AddDays(180)
+  $pess = @($ENT.Keys | ? { $ENT[$_].base -eq $L.base -and -not ($PRIM.ContainsKey($_) -and $PRIM[$_].Date -le $ENT[$_].d) })
+  $c6 = 0; $c6f = 0; $por = @{}
+  foreach ($em in $pess) { if (-not $VP[$em]) { continue }; $d0 = $ENT[$em].d; $comprou6 = $false
+    foreach ($s in $VP[$em]) { if ($s.dt.Date -le $d0) { continue }; $por[$s.esc] = [double]$por[$s.esc] + $s.val; if ($s.dt -le $lim6) { $comprou6 = $true } }
+    if ($comprou6) { $c6++; if ($ENT[$em].frio) { $c6f++ } } }
+  [ordered]@{ nome = $L.nome; compradores6m = $c6; compradoresFrios6m = $c6f; porCurso = @($por.Keys | Sort { -$por[$_] } | % { [ordered]@{ escola = $_; fat = [math]::Round($por[$_], 0) } }) } }
+$extra | ConvertTo-Json -Depth 5 | Set-Content "$dados\lancamentos-extra.json" -Encoding UTF8
+''; 'VOLUME x DINHEIRO (6 meses depois do lançamento)'
+$co = @{}; foreach ($s in $saida) { $co[$s.nome] = $s }
+foreach ($x in $extra) { $s = $co[$x.nome]; $v6 = $s.vendasLeads.d180; $f6 = $s.vendasLeadsFrios.d180
+  '{0,-30} invest {1,8:N0} leads {2,5} compraram {3,4} ({4:P1}) vendas6m {5,9:N0} sobra {6,9:N0} | FRIO invest {7,7:N0} leads {8,5} compraram {9,3} ({10:P1}) vendas6m {11,8:N0} sobra {12,8:N0}' -f $x.nome, $s.investimento, $s.leads, $x.compradores6m, ($x.compradores6m / [math]::Max(1, $s.leads)), $v6, ($v6 - $s.investimento), $s.investimentoFrio, $s.leadsFrios, $x.compradoresFrios6m, ($x.compradoresFrios6m / [math]::Max(1, $s.leadsFrios)), $f6, ($f6 - $s.investimentoFrio) }
+''; 'VENDEU O QUÊ (até hoje)'; foreach ($x in $extra) { '{0,-30} {1}' -f $x.nome, (($x.porCurso | select -First 6 | % { '{0} {1:N0}' -f $_.escola, $_.fat }) -join ' | ') }

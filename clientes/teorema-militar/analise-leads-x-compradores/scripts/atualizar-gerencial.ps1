@@ -11,6 +11,13 @@ $dados | Add-Member conclusoes @($concl | % { $_ }) -Force
 $pastaDados = Join-Path $pasta 'dados'
 $dados | Add-Member coortes @((Get-Content (Join-Path $pastaDados 'coortes-lancamentos.json') -Raw -Encoding UTF8 | ConvertFrom-Json) | % { $_ }) -Force
 $dados | Add-Member invTipos @((Get-Content (Join-Path $pastaDados 'investimento-tipos.json') -Raw -Encoding UTF8 | ConvertFrom-Json) | % { $_ }) -Force
+$dados | Add-Member extra @((Get-Content (Join-Path $pastaDados 'lancamentos-extra.json') -Raw -Encoding UTF8 | ConvertFrom-Json) | % { $_ }) -Force
+$dados | Add-Member invPublico @((Get-Content (Join-Path $pastaDados 'investimento-publico.json') -Raw -Encoding UTF8 | ConvertFrom-Json) | % { $_ }) -Force
+$dados | Add-Member vendasLancBase @((Get-Content (Join-Path $pastaDados 'vendas-lancamento-base-toda.json') -Raw -Encoding UTF8 | ConvertFrom-Json) | % { $_ }) -Force
+$dados | Add-Member invPublicoTipo (Get-Content (Join-Path $pastaDados 'investimento-publico-tipo.json') -Raw -Encoding UTF8 | ConvertFrom-Json) -Force
+$dados | Add-Member upgrade (Get-Content (Join-Path $pastaDados 'individual-para-full.json') -Raw -Encoding UTF8 | ConvertFrom-Json) -Force
+$dados | Add-Member invVenda @((Get-Content (Join-Path $pastaDados 'investimento-venda.json') -Raw -Encoding UTF8 | ConvertFrom-Json) | % { $_ }) -Force
+$dados | Add-Member retornoVenda (Get-Content (Join-Path $pastaDados 'retorno-venda.json') -Raw -Encoding UTF8 | ConvertFrom-Json) -Force
 $resp = Join-Path $pasta 'gerencial-resposta.html'
 if (Test-Path $resp) { $dados | Add-Member resposta ([IO.File]::ReadAllText($resp, [Text.Encoding]::UTF8).Trim()) -Force }
 $linha = ($dados | ConvertTo-Json -Depth 12 -Compress)

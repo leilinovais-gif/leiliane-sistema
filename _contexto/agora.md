@@ -17,7 +17,7 @@
 
 ## Pendências (só o que é da Leili ou do sistema; as do Teorema estão no andamento dele)
 
-- Conectar o sistema a um repositório no GitHub (git já instalado e iniciado nesta pasta; falta criar o repositório em github.com/new e passar o link)
+- **GitHub: conectado em 25/09** (`github.com/leilinovais-gif/leiliane-sistema`, privado); backup automático todo dia às 11h (tarefa `backup-noturno-github`, só roda com o app aberto). Feito, sai da lista.
 - Fechar identidade visual e tom de voz da Leili em `_contexto/marca/` (desde 2026-09-17)
 - Gerar `bem-vindo.html` quando a marca estiver definida (desde 2026-09-17)
 - Rodar `/mapear` pra criar skills do dia a dia (desde 2026-09-17)
@@ -29,7 +29,8 @@
 - **Só neste fim de semana (26 e 27/09) a Leili não vai trabalhar** (ela trabalha em fim de semana quando a demanda pede, então não é regra): tudo que precisa de 24 horas ou mais pra validar fica pra segunda, 28/09.
 - 2026-09-28, 09h: tarefa agendada confere o `sck` e o `src` das vendas e deixa um recado com a contagem por dia pra a Leili comparar com o `purchase` do GA4 (a rotina não lê o GA4). Só roda com o app do Claude aberto; se estiver fechado, roda quando abrir.
 - Segunda 28/09, o agente abre com: `purchase` do GA4 subiu? a conversão de compra do Google Ads (criada em 25/09) recebeu compras (e a Leili perguntou ao parceiro por que as PURCHASE foram removidas em março de 2026)? pixels de todos os produtos da Hotmart removidos pelo parceiro? designer avisado (a Leili fala por áudio)? explicar o GitHub pra ela (o que falta: criar o repositório privado em github.com/new e passar o link; onde ela acessa as coisas) e só depois rodar `/syncar`? mensagens pro Gustavo e pro time do Workspace (mandadas em 25/09) foram respondidas? A Leili cadastra ela mesma, na segunda, o webhook novo do relatório na Hotmart (Ferramentas → Webhook; o endereço com a chave se pede à conversa dos relatórios; o worker novo já está no ar desde 25/09 e recusa chave errada com 401)? n8n desligado há uma semana pode ser apagado? conversar com o time sobre RD, Pluga, Make e Montink nos webhooks?
-- **28/09 (feito):** GA4 `purchase` corrigido no [CARTEIRO] (falta confirmar na 1ª venda real e desligar o log de saída do Stape); webhook da Hotmart do relatório cadastrado e recebendo; investimento do Meta puxado. Detalhe em `clientes/teorema-militar/andamento.md` (seções 1, 2 e 5, "28/09").
+- **29/09: retomar o relatório gerencial com a Leili** (pauta no clientes/teorema-militar/andamento.md, seção 5, 'Pauta de 29/09'); o worker.js com a versão do relatório ainda não foi publicado no Cloudflare.
+- **28/09 (feito):** GA4 `purchase` — achada uma SEGUNDA causa (a tag do Google ficou com a URL de destino vazia; corrigida, publicada e testada com sucesso às 21h31); falta só confirmar na próxima venda real. Log de saída do Stape desligado; combinado não testar mais esse webhook. Webhook da Hotmart do relatório cadastrado e recebendo (2 vendas de hoje já aparecem); investimento do Meta puxado. Detalhe em `clientes/teorema-militar/andamento.md` (seções 1, 2 e 5, "28/09").
 - **Segunda 28/09, a Leili pediu que o agente chame ela pra conversar sobre a análise base de leads × compradores** (frio compra depois? compensa comprar frio no lançamento?). Achados e pauta em `clientes/teorema-militar/analise-leads-x-compradores/notas.md`; próximo passo: puxar o investimento do Meta de 2023 pra cá e comparar com o faturamento da base.
 - A trilha do lead foi aprovada e construída em 25/09; não há mais o que perguntar sobre ela além dos itens acima.
 - EsPCEx 27: captação até 28/09, lembrete 22-29/09, vendas 29/09-11/10.

@@ -21,37 +21,46 @@ function Plat($r){ $s="$($r.source)".ToLower(); $m="$($r.medium) $($r.campaign)"
 $SALES=New-Object System.Collections.ArrayList; $seen=@{}
 foreach($s in ($HMV|Sort data)){ $em=$s.email.Trim().ToLower(); $dd=[datetime]$s.data; $pr=(Fix $s.produto).Trim(); $k="$em|$pr"
   if($seen[$k] -and ($dd-$seen[$k]).TotalDays -lt 60){continue}; $seen[$k]=$dd
-  [void]$SALES.Add([pscustomobject]@{em=$em; dt=$dd; ano=$dd.Year; prod=$pr; esc=(EscolaProd $pr); val=(Num $s.valor)}) }
+  [void]$SALES.Add([pscustomobject]@{em=$em; dt=$dd; ano=$dd.Year; prod=$pr; esc=(EscolaProd $pr); val=(Num $s.valor); tr=$s.transacao}) }
+$SCKT=@{}; foreach($s in $HMV){ $SCKT[$s.transacao]=$s.sck }
 $PRIM=@{}; foreach($s in $SALES){ if(-not $PRIM.ContainsKey($s.em)){ $PRIM[$s.em]=$s.dt } }
+$INICIO=[datetime]'2023-08-01'   # período do relatório: o Meta só tem gasto a partir daqui
+$TODAS=$SALES; $SALES=New-Object System.Collections.ArrayList; foreach($s in $TODAS){ if($s.dt -ge $INICIO){ [void]$SALES.Add($s) } }
 $FV=@{}; foreach($s in $SALES){ if(-not $FV[$s.em]){$FV[$s.em]=New-Object System.Collections.ArrayList}; [void]$FV[$s.em].Add($s) }
 
 # ---- entrada de cada pessoa (primeiro cadastro com data)
 $ENT=@{}
 foreach($r in $LEADS){ if(-not $r.email -or $r.base -eq 'ACTIVE (migrado)'){continue}; $dd=[datetime]$r.data
   if(-not $ENT[$r.email] -or $dd -lt $ENT[$r.email].d){
-    $es= if($r.base -like 'ACTIVE*'){ Escola "$($r.campaign) $($r.term)" } else { Escola $r.base }
+    $es= if($r.base -like 'ACTIVE*' -or $r.base -eq 'SUPABASE'){ Escola "$($r.campaign) $($r.term)" } else { Escola $r.base }
     $ENT[$r.email]=[pscustomobject]@{d=$dd; esc=$es; pub=(Grupo (Classe $r)); plat=(Plat $r); lead=$true; base=$r.base} } }
 # lead de verdade = entrou antes da primeira compra (regra da Leili: chegou no dia da compra ou depois = aluno)
 foreach($em in @($ENT.Keys)){ if($PRIM.ContainsKey($em) -and $PRIM[$em].Date -le $ENT[$em].d){ $ENT[$em].lead=$false } }
-$MIG=@{}; foreach($r in $LEADS){ if($r.base -eq 'ACTIVE (migrado)' -and $r.email){ $MIG[$r.email]=1 } }
+$MIG=@{}; $MIGU=@{}; foreach($r in $LEADS){ if($r.base -eq 'ACTIVE (migrado)' -and $r.email){ $MIG[$r.email]=1; if($r.source -or $r.medium -or $r.campaign){ $MIGU[$r.email]=1 } } }   # MIGU = passou por formulário (tem UTM); sem UTM = aluno que a Hotmart mandou
+$NAB=@{}; foreach($r in $LEADS){ if($r.email){ $NAB[$r.email.Trim().ToLower()]=1 } }   # está em alguma base, com ou sem data
 
-# ---- origem de cada venda
+# ---- origem de cada venda (lead captado antes de ago/2023 conta pelo público de origem dele)
 foreach($s in $SALES){ $o='nunca'; $en=$ENT[$s.em]; $el=$null; $dias=$null; $pl=''
   if($en -and $en.lead -and $en.d -lt $s.dt.Date){ $o=$en.pub; $el=$en.esc; $dias=[int]($s.dt.Date-$en.d).TotalDays; $pl=$en.plat }
   elseif($PRIM[$s.em] -lt $s.dt.AddDays(-1)){ $o='aluno' }
   elseif($MIG[$s.em]){ $o='active' }
+  # regra da Leili: quem entrou na base no dia da compra ou depois é aluno que a Hotmart mandou, não lead; Active antigo sem UTM também
+  if($o -in 'aluno','nunca'){ $o='fora' }
+  if($o -eq 'active' -and -not $MIGU[$s.em]){ $o='fora' }
+  if($o -eq 'fora' -and $SCKT[$s.tr] -match '(?i)whats'){ $o='whats' }   # comprou pelo link de grupo de WhatsApp: estava no grupo, era lead
   $s | Add-Member origem $o; $s | Add-Member escLead $el; $s | Add-Member dias $dias; $s | Add-Member plat $pl }
-$ORIG='frio','pq','org','semorigem','aluno','active','nunca'
+$ORIG='frio','pq','org','semorigem','antigo','aluno','active','whats','nunca','fora'
 function Divide($lista){ $h=[ordered]@{}; foreach($o in $ORIG){ $g=@($lista|?{$_.origem -eq $o}); $h[$o]=[ordered]@{n=$g.Count; fat=[math]::Round(($g|measure val -Sum).Sum,0)} }; $h }
 foreach($x in $GASTO){ $x | Add-Member g (Num $x.gasto); $x | Add-Member esc (Escola $x.campanha) }
 function SomaGasto($lista){ [math]::Round(($lista|measure g -Sum).Sum,0) }
 
 $D=[ordered]@{}
 $D.geradoEm=$HOJE.ToString('yyyy-MM-dd')
-$D.cobertura=[ordered]@{ vendasDesde='2023-01'; metaDesde='2023-08'; leadsPessoas=@($ENT.Values|?{$_.lead}).Count; vendas=$SALES.Count;
+$D.cobertura=[ordered]@{ vendasDesde='2023-08'; metaDesde='2023-08'; leadsPessoas=@($ENT.Values|?{$_.lead}).Count; vendas=$SALES.Count;
   bases='OP.BB23, OP.ESPCEX.24, PLANO.ESPCEX.24, P.VIDA.24, OP.BB24, OP.ESPCEX.25, MAT.BAS.25, OP.BB.25, OP.ESPCEX.26, MAT.BAS.26 e os cadastros de 2026 do ActiveCampaign' }
 
 # 1) por ano
+# 2023 = ago a dez (período do relatório)
 $D.anos=@(foreach($a in 2023..2026){ $g=@($SALES|?{$_.ano -eq $a}); $ga=@($GASTO|?{$_.ano -eq "$a"})
   [ordered]@{ ano=$a; vendas=$g.Count; fat=[math]::Round(($g|measure val -Sum).Sum,0); meta=(SomaGasto $ga); metaFrio=(SomaGasto @($ga|?{$_.publico -eq 'Frio (PF)'})); metaPQ=(SomaGasto @($ga|?{$_.publico -eq 'Quente (PQ)'})); origem=(Divide $g) } })
 
@@ -76,7 +85,9 @@ $D.matriz=@(foreach($g in ($vl|Group escLead|Sort { -($_.Group|measure val -Sum)
 
 # 5) tempo até a 1a compra: curva por escola de entrada x público
 $PES=@(foreach($em in $LEADPES){ $en=$ENT[$em]; $f=$null; if($PRIM.ContainsKey($em)){ $f=[int]($PRIM[$em].Date-$en.d).TotalDays }
-  [pscustomobject]@{em=$em; esc=$en.esc; pub=$en.pub; plat=$en.plat; ano=$en.d.Year; exp=[int]($HOJE-$en.d).TotalDays; dias=$f; base=$en.base} })
+  [pscustomobject]@{em=$em; esc=$en.esc; pub=$en.pub; plat=$en.plat; ano=$en.d.Year; exp=[int]($HOJE-$en.d).TotalDays; dias=$f; base=$en.base; ent=$en.d} })
+# leads captados no período do relatório (ago/2023 em diante), por público de entrada
+$D.leadsPeriodo=[ordered]@{ frio=@($PES|?{$_.ent -ge $INICIO -and $_.pub -eq 'frio'}).Count; pq=@($PES|?{$_.ent -ge $INICIO -and $_.pub -eq 'pq'}).Count; org=@($PES|?{$_.ent -ge $INICIO -and $_.pub -eq 'org'}).Count }
 function Curva($g){ $c=[ordered]@{}; foreach($H in 30,90,180,365,730){ $el=@($g|?{$_.exp -ge $H}); $c["d$H"]= if($el.Count -ge 100){ [math]::Round(100*@($el|?{$_.dias -ne $null -and $_.dias -le $H}).Count/$el.Count,2) } else { $null }; $c["n$H"]=$el.Count }; $c }
 $D.tempo=@(foreach($e in 'EsPCEx','Barro Branco','Matemática Básica','Projeto de Vida','(todas)'){ foreach($pb in 'frio','quente'){
   $g=@($PES|?{ ($e -eq '(todas)' -or $_.esc -eq $e) -and $(if($pb -eq 'frio'){$_.pub -eq 'frio'}else{$_.pub -in 'org','pq'}) })
@@ -125,7 +136,7 @@ foreach ($f in $D.frio) { $ls = @($PES | ? { $_.ano -eq $f.ano -and $_.pub -eq '
 
 # 10) por lançamento: investimento em captação (Meta + Google/YouTube) x o que os leads daquele lançamento compraram em 2 anos
 # Só entram lançamentos em que temos as duas pontas: o gasto (pelo nome da campanha) e a planilha de leads (pela base de entrada).
-$GOO = @(Import-Csv "$PSScriptRoot\..\dados\google-ads-gasto-mensal.csv" -Encoding UTF8 | % { [pscustomobject]@{ ano = $_.mes.Substring(0, 4); campanha = $_.campanha; g = [double]::Parse($_.gasto, $inv) } })
+$GOO = @(Import-Csv "$PSScriptRoot\..\dados\google-ads-gasto-mensal.csv" -Encoding UTF8 | ? { $_.mes -ge '2023-08' } | % { [pscustomobject]@{ ano = $_.mes.Substring(0, 4); campanha = $_.campanha; g = [double]::Parse($_.gasto, $inv) } })
 function EhCaptacao($c) { $u = $c.ToUpper(); ($u -match 'CAPTA|CADASTRO|LEADS|DISTRIBUI') -and ($u -notmatch 'CARRINHO|VENDA|LEMBRETE|AQUEC|CONVERS') }
 function PubGoogle($c) { $u = " $($c.ToUpper()) "; if ($u -match '[^A-Z]PF[^A-Z]') { 'frio' } elseif ($u -match '[^A-Z]PQ[^A-Z]') { 'quente' } else { '' } }
 function PubMeta($x) { if ($x.publico -eq 'Frio (PF)') { 'frio' } elseif ($x.publico -eq 'Quente (PQ)') { 'quente' } else { '' } }
@@ -154,6 +165,32 @@ $D.lancamentos = @(foreach ($L in $LANC) {
     quenteComprou = @($lq | ? { $_.dias -ne $null -and $_.dias -le 730 }).Count; quenteRealizado = [math]::Round($pq.real, 0); quenteProjecao = [math]::Round($pq.proj, 0) } })
 $D.google = [ordered]@{ total = [math]::Round(($GOO | measure g -Sum).Sum, 0); desde = '2023-01'; anos = @(foreach ($a in 2023..2026) { [math]::Round((@($GOO | ? { $_.ano -eq "$a" }) | measure g -Sum).Sum, 0) }) }
 foreach ($x in $D.anos) { $x['google'] = [math]::Round((@($GOO | ? { $_.ano -eq "$($x.ano)" }) | measure g -Sum).Sum, 0) }
+
+# 11) números básicos (pessoas) e por onde chegou ao checkout quem não era lead antes de comprar
+$emBase=@{}; foreach($r in $LEADS){ $em="$($r.email)".Trim().ToLower(); if($em -match '@'){ $emBase[$em]=1 } }
+$compradores=@($SALES | Group em); $eraLead=@($compradores | ? { $en=$ENT[$_.Name]; $en -and $en.lead }); $naBase=@($compradores | ? { $emBase[$_.Name] -and -not ($ENT[$_.Name] -and $ENT[$_.Name].lead) })
+function OrigemCheckout($sck){ $x="$sck".ToLower(); if(-not $x -or $x -match '^null'){'Link sem rastreio'} elseif($x -match 'whats'){'WhatsApp'} elseif($x -match 'yt_live|live|youtube|yt'){'YouTube'} elseif($x -match 'meta\.ads|facebook|fb_|pf|pq'){'Anúncio'} elseif($x -match 'bio|stories|ig|instagram'){'Instagram'} elseif($x -match 'email'){'E-mail'} elseif($x -match 'google|bing|referral'){'Google / busca'} elseif($x -match 'direct'){'Direto no site'} else {'Outros'} }
+$SCK=@{}; foreach($s in $HMV){ $SCK[$s.transacao]=$s.sck }
+$semLead=@($SALES | ? { -not ($ENT[$_.em] -and $ENT[$_.em].lead) })
+$D.basico=[ordered]@{ pessoasNaBase=$emBase.Count; compradores=$compradores.Count; eraLead=$eraLead.Count; naBaseDepois=$naBase.Count; foraDaBase=($compradores.Count-$eraLead.Count-$naBase.Count); fatEraLead=[math]::Round((@($eraLead|%{$_.Group})|measure val -Sum).Sum,0); fatNaBase=[math]::Round((@($naBase|%{$_.Group})|measure val -Sum).Sum,0); fatFora=[math]::Round((@($compradores|?{ -not $emBase[$_.Name] }|%{$_.Group})|measure val -Sum).Sum,0)
+  checkout=@($HMV | ? { [datetime]$_.data -ge $INICIO -and -not ($ENT[$_.email.Trim().ToLower()] -and $ENT[$_.email.Trim().ToLower()].lead) } | Group { OrigemCheckout $_.sck } | Sort { -($_.Group | % { Num $_.valor } | measure -Sum).Sum } | % { [ordered]@{ origem=$_.Name; vendas=$_.Count; fat=[math]::Round(($_.Group | % { Num $_.valor } | measure -Sum).Sum,0) } }) }
+
+# 12) canais: origem do lead (onde entrou antes de comprar) x último clique (link usado na compra), e a estimativa por canal
+function CanalLead($r){ $s="$($r.source)".ToLower(); $m="$($r.medium) $($r.campaign)".ToLower(); $g=Grupo (Classe $r)
+  if($g -in 'frio','pq'){ $p=Plat $r; if($p -eq 'meta'){return 'Anúncio no Meta (Instagram/Facebook)'}; if($p -eq 'youtube'){return 'Anúncio no YouTube'}; return 'Anúncio (outro)' }
+  if($g -eq 'org'){ if($s -match 'whats'){return 'WhatsApp'}; if($s -match 'mail'){return 'E-mail'}; if($s -match 'yt|youtube'){return 'YouTube orgânico'}; if($s -match 'ig|insta|stories|bio'){return 'Instagram orgânico'}; if($s -match 'google|site|referral|direct'){return 'Google / site'}; return 'Orgânico (outro)' }
+  return 'Lead sem origem registrada' }
+function CanalClique($sck){ $x="$sck".ToLower(); if(-not $x -or $x -match '^null'){''} elseif($x -match 'whats'){'WhatsApp'} elseif($x -match 'tm-5-anos|anivers|niver'){'Campanha de aniversário do Teorema'} elseif($x -match 'comercial'){'Comercial / atendimento'} elseif($x -match 'manychat|linktree'){'Instagram orgânico'} elseif($x -match 'template_estrutura|fb-ads|-ads-'){'Anúncio (outro)'} elseif($x -match 'site'){'Site do Teorema (página de venda)'} elseif($x -match 'yt_live|live'){'Live no YouTube'} elseif($x -match 'meta\.ads|facebook|fb_|(^|[^a-z])p[fq]([^a-z]|$)'){'Anúncio no Meta (Instagram/Facebook)'} elseif($x -match 'yt_ads'){'Anúncio no YouTube'} elseif($x -match 'bio|stories|ig|instagram'){'Instagram orgânico'} elseif($x -match 'youtube|yt'){'YouTube orgânico'} elseif($x -match 'mail'){'E-mail'} elseif($x -match 'google|bing|referral|direct'){'Google / site'} elseif($x -match 'hotmart'){'Página da Hotmart'} else {'Outros'} }
+# canal de entrada de cada lead (primeiro cadastro com data)
+$CNL=@{}; foreach($r in $LEADS){ if(-not $r.email -or $r.base -eq 'ACTIVE (migrado)'){continue}; $em=$r.email.Trim().ToLower(); $dd=[datetime]$r.data; if(-not $CNL[$em] -or $dd -lt $CNL[$em].d){ $CNL[$em]=@{d=$dd; c=(CanalLead $r)} } }
+$cL=@{}; $cC=@{}; $cU=@{}; $semLeitura=0.0
+foreach($s in $SALES){ $en=$ENT[$s.em]; $clk=CanalClique $SCKT[$s.tr]
+  $lead = if($en -and $en.lead -and $en.d -lt $s.dt.Date -and $CNL[$s.em]){ $CNL[$s.em].c } else { '' }
+  if($lead -eq 'Lead sem origem registrada'){ $lead='Lead frio (sem origem registrada)' }
+  if(-not $lead -and $SCKT[$s.tr] -match '(?i)whats'){ $lead='Grupo de WhatsApp (lead)' }
+  if($lead){ $cL[$lead]=[double]$cL[$lead]+$s.val; $cU['Lead · '+$lead]=[double]$cU['Lead · '+$lead]+$s.val; continue }
+  $kc= if($clk){$clk}else{'sem leitura'}; $cC[$kc]=[double]$cC[$kc]+$s.val
+  if($clk){ $cU['Venda direta · '+$clk]=[double]$cU['Venda direta · '+$clk]+$s.val } else { $semLeitura+=$s.val } }$D.canais=[ordered]@{ origemLead=(Lista $cL); ultimoClique=(Lista $cC); estimativa=(Lista $cU); semLeitura=[math]::Round($semLeitura,0) }
 
 $D | ConvertTo-Json -Depth 10 -Compress | Set-Content "$PSScriptRoot\..\dados\gerencial.json" -Encoding UTF8
 "ok: $((Get-Item "$PSScriptRoot\..\dados\gerencial.json").Length) bytes"
